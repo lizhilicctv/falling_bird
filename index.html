@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+	</head>
+	<body>
+		<h1 style="text-align: center;">《Falling Bird》掉落的小鸟</h1>
+		<p  style="text-align: center;">按压空格即可开始（也可以重新开始），我的邮箱lizhilimaster@163.com</p>
+		<audio id="music" src="img/moren.wav" autoplay="autoplay" loop="loop">你的浏览器不支持audio标签。</audio>
+		<audio id="music2" src="img/shibai.wav" autoplay="autoplay">你的浏览器不支持audio标签。</audio>
+		<div id="hua">
+			<div id="niao">
+				<img src="img/bird0_0.png">
+			</div>
+		</div>
+		<style type="text/css">
+			#hua {
+				width: 800px;
+				height: 600px;
+				border-radius: 15px;
+				margin: 0 auto;
+				background-image: url(img/bg_day.png);
+				background-size: auto 600px;
+				position: relative;
+				overflow: hidden;
+			}
+
+			#niao {
+				position: absolute;
+				left: 160px;
+				top: 160px
+			}
+
+			.guan {
+				position: absolute;
+			}
+		</style>
+		<script src="js/jquery-2.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			let bg = 0,
+				niao_top = 160,
+				ke = true,
+				kai=true;
+			let bg_ding, niao_ding, zhu_ding, zeng_ding;
+			var music = document.getElementById("music");
+			var music2 = document.getElementById("music2");
+			music.pause();
+			music2.pause();
+
+			function ting() {
+				clearInterval(niao_ding);
+				clearInterval(bg_ding);
+				clearInterval(zeng_ding);
+				clearInterval(zhu_ding);
+				kai=false
+			}
+
+			$(document).keydown(function(e) { //这个要切换成 空格健
+				if (e.keyCode == 32) {
+					if(!kai){
+						location.reload();
+					}
+					if (niao_ding) {
+						if (ke) {
+							niao_top -= 100
+							$('#niao').css('top', niao_top)
+							ke = false
+						}
+					} else {
+						kaishi()
+					}
+				}
+			})
+			$(document).keyup(function(e) {
+				ke = true
+			})
+			function kaishi() {
+				music.play();
+				if (!niao_ding) {
+					//增加柱子
+					$('#hua').append(
+						'<div class="guan" style="right: 0;top:0px"><div class="shang" style="margin-bottom: 160px;"><img src="img/pipe_down.png" ></div><div class="xia"><img src="img/pipe_up.png" ></div></div>'
+					)
+
+					zeng_ding = setInterval(function() {
+						let num = 0 - parseInt(200 * Math.random());
+						$('#hua').append('<div class="guan" style="right: 0;top:' + num +
+							'px"><div class="shang" style="margin-bottom: 160px;"><img src="img/pipe_down.png" ></div><div  class="xia" ><img src="img/pipe_up.png" ></div></div>'
+						)
+					}, 5000);
+
+					//柱子移动
+					zhu_ding = setInterval(function() {
+						$('.guan').each(function() {
+							$(this).css('right', parseInt($(this).css('right')) + 20)
+						});
+					}, 500);
+
+
+					//小鸟掉落
+					niao_ding = setInterval(function() {
+						niao_top += 5
+						$('#niao').css('top', niao_top)
+						$('#niao img').attr("src", 'img/bird0_' + (niao_top / 5) % 3 + '.png');
+						if (niao_top < 0 || niao_top > 580) {
+							ting()
+							music.pause();
+							music2.play();
+							alert('你出框了！');
+							return false
+						}
+						$('.guan').each(function() {
+
+							let shang1_top = $(this).find('.shang').offset().top + 320
+							let shang1_left = $(this).find('.shang').offset().left
+							let shang2_top = $(this).find('.shang').offset().top + 320
+							let shang2_left = $(this).find('.shang').offset().left + 52
+
+							let xia1_top = $(this).find('.xia').offset().top
+							let xia1_left = $(this).find('.xia').offset().left
+							let xia2_top = $(this).find('.xia').offset().top
+							let xia2_left = $(this).find('.xia').offset().left + 52
+
+							let niao_top = $('#niao').offset().top
+							let niao_left = $('#niao').offset().left
+
+							if ((niao_top < shang1_top || niao_top + 40 > xia1_top) && (niao_left + 40 > shang1_left && niao_left <
+									shang2_left)) {
+								ting()
+								music.pause();
+								music2.play();
+								alert('你输了！');
+								return false
+							}
+						});
+					}, 50);
+
+					// 背景移动
+					bg_ding = setInterval(function() {
+						bg -= 5
+						$('#hua').css('backgroundPositionX', bg)
+					}, 500);
+				}
+
+
+			}
+		</script>
+
+	</body>
+</html>
